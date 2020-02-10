@@ -14,6 +14,7 @@ page_content = soup.findAll('div', {'id': 'page-content'})
 
 def scrape_classes():
     classes = {}
+    class_links = {}
     class_categories = page_content[0].findAll('div', {'class': 'col-md-7'})
     for c in class_categories:
         single_class = c.find('h1')
@@ -25,10 +26,11 @@ def scrape_classes():
                 sub_classes = []
                 for i in sub_classes_ref:
                     sub_classes.append(i.text)
+                    class_links[i.text] = i.get('href')
 
                 classes[class_name] = sub_classes
 
-    return classes
+    return classes, class_links
 
 
 def scrape_races():
@@ -48,23 +50,21 @@ def scrape_races():
 
 def generate_character(classes, races):
     class_list = list(classes)
-    class_num = randint(0, len(class_list)-1)
-    class_pick = class_list[class_num]
+    class_pick = class_list[randint(0, len(class_list)-1)]
 
     sub_class_list = classes.get(class_pick)
-    sub_class_num = randint(0, len(sub_class_list)-1)
-    sub_class_pick = sub_class_list[sub_class_num]
+    sub_class_pick = sub_class_list[randint(0, len(sub_class_list)-1)]
 
-    race_num = randint(0, len(races)-1)
-    race_pick = races[race_num]
+    race_pick = races[randint(0, len(races)-1)]
 
     return class_pick, sub_class_pick, race_pick
 
 
 if __name__ == '__main__':
-    classes = scrape_classes()
+    classes, class_links = scrape_classes()
     races = scrape_races()
     main_class, sub_class, race = generate_character(classes, races)
 
-    print('Congratulations you are a: ' + race + ', ' + sub_class + ' ' + main_class)
+    print('Congratulations you are now a: ' + race + ', ' + sub_class + ' ' + main_class)
+    print('Link: ' + class_links.get(sub_class))
 
